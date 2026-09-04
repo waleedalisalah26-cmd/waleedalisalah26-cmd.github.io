@@ -1,110 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exponential Functions • Graph Challenge</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exponential Functions • Differentiation</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)'],['$','$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#071222;color:#f2f6fc;font-family:Arial,sans-serif}
-.wrap{max-width:1120px;margin:auto;padding:22px 15px}.tag{color:#23dce1;font-size:12px;font-weight:800;letter-spacing:2px}
-h1{margin:7px 0;font-size:31px}.sub{color:#a4b5c9;margin-bottom:17px}.card{background:#0c1e32;border:1px solid #29445f;border-radius:20px;padding:21px}
-.eq{font-size:36px;font-weight:800;margin:0 0 8px}.instructions{color:#c4d0df;margin-bottom:15px}
-.layout{display:grid;grid-template-columns:1fr 1.3fr;gap:17px}.panel{background:#09192a;border:1px solid #29445f;border-radius:16px;padding:15px}
-h2{font-size:16px;margin:0 0 10px}.mode{display:flex;gap:7px;margin-bottom:10px}.mode button{margin:0;padding:8px 11px;width:auto;background:#18334b;color:#fff}.mode button.active{background:#23dce1;color:#06111e}
-table{width:100%;border-collapse:collapse}th,td{padding:7px;border-bottom:1px solid #29445f;text-align:center}th{color:#23dce1}
-input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #3a5670;background:#071222;color:#fff;font-size:16px}
-button{width:100%;padding:12px;border:0;border-radius:9px;background:#23dce1;color:#06111e;font-size:15px;font-weight:800;cursor:pointer;margin-top:9px}
-button.secondary{background:#18334b;color:#fff}.result{display:none;margin-top:12px;padding:13px;border-radius:11px;background:#102b43;border:1px solid #23dce1}
-#graph{width:100%;height:auto;background:#08192a;border-radius:11px;display:block}.hint{color:#9fb1c5;font-size:12px;margin-top:7px}
-@media(max-width:800px){.layout{grid-template-columns:1fr}.eq{font-size:30px}}
+:root{--bg:#071222;--card:#0d2035;--line:#29445f;--text:#f3f7fc;--muted:#a7b8cc;--cyan:#23dce1;--pink:#f54b99;--green:#39c67a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:850px;margin:auto;padding:20px 15px}.tag{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--cyan)}
+h1{font-size:30px;margin:7px 0}.sub{color:var(--muted);line-height:1.5}
+.levels{display:flex;gap:8px;margin:17px 0;flex-wrap:wrap}
+.levels button{flex:1;min-width:120px}.btn{border:1px solid var(--line);background:var(--card);color:white;border-radius:11px;padding:12px 14px;font-weight:800;cursor:pointer}
+.btn.active{border-color:var(--cyan);color:var(--cyan)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.badge{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--cyan)}
+.math{font-size:30px;margin:15px 0}.question{font-size:18px;line-height:1.6}
+input,select{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#07192b;color:white;font-size:17px;margin-top:8px}
+.actions{display:flex;gap:9px;margin-top:12px}.actions .btn{flex:1}
+.hint,.feedback{display:none;margin-top:13px;padding:12px;border-radius:10px;background:#0a1929}
+.hint{color:var(--muted)}.correct{color:var(--green);border:1px solid var(--green)}.wrong{color:var(--pink);border:1px solid var(--pink)}
+.small{font-size:12px;color:var(--muted);margin-top:8px}
+mjx-container{overflow-x:auto;overflow-y:hidden}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="tag">EXPONENTIAL FUNCTIONS • INTERACTIVE CHALLENGE</div>
-<h1 id="title">CHALLENGE 01</h1>
-<div class="sub">Complete the table • Plot the points • Check your answers</div>
+<div class="tag">LESSON 3-2 • DIFFERENTIATED QR PRACTICE</div>
+<h1 id="title">Exponential Functions</h1>
+<div class="sub">Each QR opens its part directly. Choose Support, Core, or Challenge. Mathematical notation is rendered in LaTeX.</div>
+
+<div class="levels">
+<button id="support" class="btn" onclick="setLevel('support')">SUPPORT</button>
+<button id="core" class="btn" onclick="setLevel('core')">CORE</button>
+<button id="challenge" class="btn" onclick="setLevel('challenge')">CHALLENGE</button>
+</div>
+
 <div class="card">
-<div class="eq" id="eq"></div>
-<div class="instructions">Use at least five points. <b>You can enter answers as decimals OR fractions.</b></div>
-<div class="layout">
-<div class="panel">
-<h2>1. Complete the table</h2>
-<div class="mode">
-<button id="decBtn" class="active" onclick="setMode('decimal')">DECIMAL</button>
-<button id="fracBtn" onclick="setMode('fraction')">FRACTION</button>
+<div class="badge" id="badge"></div>
+<div class="math" id="math"></div>
+<div class="question" id="question"></div>
+<input id="answer" placeholder="Type your answer">
+<div class="actions">
+<button class="btn" onclick="check()">CHECK</button>
+<button class="btn" onclick="showHint()">HINT</button>
 </div>
-<table><tr><th>x</th><th>y</th></tr>
-<tr><td>-2</td><td><input id="y0" placeholder="0.04 or 1/25"></td></tr>
-<tr><td>-1</td><td><input id="y1" placeholder="0.2 or 1/5"></td></tr>
-<tr><td>0</td><td><input id="y2" placeholder="1"></td></tr>
-<tr><td>1</td><td><input id="y3" placeholder="5"></td></tr>
-<tr><td>2</td><td><input id="y4" placeholder="25"></td></tr>
-</table>
-<button onclick="plotStudent()">PLOT MY POINTS</button>
-<div class="row" style="margin-top:9px"><label>Function behavior<select id="trend"><option value="">Choose...</option><option>Increasing</option><option>Decreasing</option></select></label></div>
-<label>y-intercept<input id="intercept" placeholder="1 or 1/1"></label>
-<button class="secondary" onclick="check()">CHECK MY ANSWERS</button>
-<div id="result" class="result"></div>
-<div class="hint">Examples: <b>0.04</b>, <b>0.2</b>, <b>1/25</b>, <b>1/5</b></div>
-</div>
-<div class="panel">
-<h2>2. Graph</h2>
-<canvas id="graph" width="650" height="470"></canvas>
-<div class="hint">The graph shows your entered points. Fractions and decimals are both accepted.</div>
+<div id="hint" class="hint"></div>
+<div id="feedback" class="feedback"></div>
+<div class="small">Powers are always displayed as true superscripts through LaTeX, e.g. \(5^{x}\), \(e^{-x}\), and \(\left(\frac{1}{5}\right)^x\).</div>
 </div>
 </div>
-</div>
-</div>
+
 <script>
-const c=new URLSearchParams(location.search).get("challenge")||"1";
-const data=c==="2"
-?{eq:"g(x) = (1/5)ˣ",vals:[25,5,1,.2,.04],display:["25","5","1","1/5","1/25"],trend:"Decreasing",color:"#f54b99"}
-:{eq:"f(x) = 5ˣ",vals:[.04,.2,1,5,25],display:["1/25","1/5","1","5","25"],trend:"Increasing",color:"#23dce1"};
-document.getElementById("title").textContent="CHALLENGE "+String(c).padStart(2,"0");
-document.getElementById("eq").textContent=data.eq;
-let mode="decimal";
-function setMode(m){
- mode=m;document.getElementById("decBtn").classList.toggle("active",m==="decimal");
- document.getElementById("fracBtn").classList.toggle("active",m==="fraction");
- const d=mode==="decimal"?data.vals.map(v=>String(v)):data.display;
- for(let i=0;i<5;i++)document.getElementById("y"+i).placeholder=d[i];
+const bank={
+1:{
+ title:"Graphing Exponential Functions",
+ support:{m:"\\\\(f(x)=5^{x}\\\\)",q:"Find \\\\(f(0)\\\\).",a:["1"],h:"Use the zero-exponent rule."},
+ core:{m:"\\\\(f(x)=5^{x}\\\\)",q:"State the horizontal asymptote.",a:["y=0","y = 0"],h:"Think about the value the graph approaches as x becomes very negative."},
+ challenge:{m:"\\\\(g(x)=\\\\left(\\\\frac{1}{5}\\\\right)^{x}\\\\)",q:"Is this function growth or decay?",a:["decay"],h:"A base between 0 and 1 represents decay."}
+},
+2:{
+ title:"Transformations",
+ support:{m:"\\\\(y=2^{x+2}-1\\\\)",q:"What is the parent function?",a:["y=2^x","2^x"],h:"Remove the shifts and look at the exponential part."},
+ core:{m:"\\\\(y=2^{x+2}-1\\\\)",q:"How many units is the graph shifted left?",a:["2","2 units"],h:"A positive number inside the exponent shifts the graph left."},
+ challenge:{m:"\\\\(y=2^{x+2}-1\\\\)",q:"State the horizontal asymptote.",a:["y=-1","y = -1","-1"],h:"The vertical shift changes the horizontal asymptote."}
+},
+3:{
+ title:"Base e & Reflections",
+ support:{m:"\\\\(f(x)=e^{x}\\\\)",q:"Is the graph increasing or decreasing?",a:["increasing"],h:"The base e is greater than 1."},
+ core:{m:"\\\\(f(x)=-e^{-x}\\\\)",q:"Which axis is involved in the reflection caused by replacing x with -x?",a:["y-axis","y axis","yaxis"],h:"A negative sign inside the input creates a horizontal reflection."},
+ challenge:{m:"\\\\(f(x)=-e^{-x}\\\\)",q:"State the horizontal asymptote.",a:["y=0","y = 0","0"],h:"The reflections do not change the horizontal asymptote."}
+},
+4:{
+ title:"Compound Interest",
+ support:{m:"\\\\(A=P\\\\left(1+\\\\frac{r}{n}\\\\right)^{nt}\\\\)",q:"For annual compounding, what is \\\\(n\\\\)?",a:["1"],h:"Annual means once per year."},
+ core:{m:"\\\\(A=P\\\\left(1+\\\\frac{r}{n}\\\\right)^{nt}\\\\)",q:"For quarterly compounding, what is \\\\(n\\\\)?",a:["4"],h:"There are four quarters in one year."},
+ challenge:{m:"\\\\(A=Pe^{rt}\\\\)",q:"Is this periodic or continuous compounding?",a:["continuous","continuous compounding"],h:"The model using e represents continuous compounding."}
+},
+5:{
+ title:"Half-Life Applications",
+ support:{m:"\\\\(A=A_0\\\\left(\\\\frac{1}{2}\\\\right)^{t/h}\\\\)",q:"A 2 g sample has a 30-year half-life. How much remains after 30 years?",a:["1","1g","1 g"],h:"One half-life leaves one-half of the original amount."},
+ core:{m:"\\\\(A=2\\\\left(\\\\frac{1}{2}\\\\right)^{t/30}\\\\)",q:"How much remains after 60 years? Enter grams.",a:["0.5",".5","0.5g","0.5 g","1/2"],h:"60 years equals two half-lives."},
+ challenge:{m:"\\\\(A=2\\\\left(\\\\frac{1}{2}\\\\right)^{t/30}\\\\)",q:"How much remains after 90 years? Enter grams.",a:["0.25",".25","0.25g","0.25 g","1/4"],h:"90 years equals three half-lives."}
 }
-function parseVal(s){
- s=(s||"").trim().replace("−","-");
- if(s.includes("/")){let p=s.split("/");if(p.length===2&&Number(p[1])!==0)return Number(p[0])/Number(p[1]);}
- return Number(s);
+};
+
+const params=new URLSearchParams(location.search);
+const part=Math.max(1,Math.min(5,Number(params.get("part")||1)));
+let level=params.get("level")||"core";
+function norm(s){return String(s||"").toLowerCase().replace(/\s+/g,"").replace(/[,$]/g,"")}
+function render(){
+ const b=bank[part],x=b[level];
+ document.getElementById("title").textContent=b.title;
+ document.getElementById("badge").textContent=level.toUpperCase()+" LEVEL";
+ document.getElementById("math").innerHTML=x.m;
+ document.getElementById("question").innerHTML=x.q;
+ document.getElementById("hint").textContent=x.h;
+ document.getElementById("hint").style.display="none";
+ document.getElementById("feedback").style.display="none";
+ document.getElementById("answer").value="";
+ ["support","core","challenge"].forEach(k=>document.getElementById(k).classList.toggle("active",k===level));
+ if(window.MathJax) MathJax.typesetPromise();
 }
-const canvas=document.getElementById("graph"),ctx=canvas.getContext("2d");
-function draw(points=[]){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-const W=canvas.width,H=canvas.height,L=58,R=18,T=22,B=42,xmin=-5,xmax=5,ymin=-2,ymax=30;
-const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R),Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
-ctx.strokeStyle="#29445f";ctx.lineWidth=1;
-for(let x=-5;x<=5;x++){ctx.beginPath();ctx.moveTo(X(x),T);ctx.lineTo(X(x),H-B);ctx.stroke()}
-for(let y=-2;y<=30;y+=2){ctx.beginPath();ctx.moveTo(L,Y(y));ctx.lineTo(W-R,Y(y));ctx.stroke()}
-ctx.strokeStyle="#dce7f3";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(0),T);ctx.lineTo(X(0),H-B);ctx.stroke();
-ctx.beginPath();ctx.moveTo(L,Y(0));ctx.lineTo(W-R,Y(0));ctx.stroke();
-ctx.fillStyle="#a4b5c9";ctx.font="12px Arial";
-for(let x=-5;x<=5;x++)ctx.fillText(x,X(x)-4,H-B+21);
-for(let y=0;y<=30;y+=5)ctx.fillText(y,L-28,Y(y)+4);
-ctx.fillStyle=data.color;ctx.font="bold 13px Arial";ctx.fillText(data.eq,W-150,18);
-points.forEach(p=>{if(Number.isFinite(p[1])&&p[1]>=ymin&&p[1]<=ymax){ctx.fillStyle=data.color;ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),6,0,Math.PI*2);ctx.fill();}});
-}
-draw();
-function getVals(){return [0,1,2,3,4].map(i=>parseVal(document.getElementById("y"+i).value))}
-function plotStudent(){draw(getVals().map((y,i)=>[i-2,y]));}
+function setLevel(v){level=v;history.replaceState(null,"",`?part=${part}&level=${level}`);render()}
+function showHint(){document.getElementById("hint").style.display="block"}
 function check(){
-const got=getVals();
-const tableOK=got.every((v,i)=>Number.isFinite(v)&&Math.abs(v-data.vals[i])<.0001);
-const trendOK=document.getElementById("trend").value===data.trend;
-const intOK=Math.abs(parseVal(document.getElementById("intercept").value)-1)<.0001;
-const r=document.getElementById("result");r.style.display="block";
-r.innerHTML=(tableOK&&trendOK&&intOK)
-?`<b>🎉 Excellent!</b><br>Everything is correct!<br><br><b>Correct values:</b> ${data.display.join(" , ")}<br><b>Behavior:</b> ${data.trend}<br><b>y-intercept:</b> 1`
-:`<b>Almost there!</b><br><br><b>Correct values:</b> ${data.display.join(" , ")}<br><b>Behavior:</b> ${data.trend}<br><b>y-intercept:</b> 1<br><br>Try again using decimals or fractions.`;
-plotStudent();
+ const x=bank[part][level], v=norm(document.getElementById("answer").value);
+ const ok=x.a.some(a=>norm(a)===v);
+ const f=document.getElementById("feedback");
+ f.style.display="block";f.className="feedback "+(ok?"correct":"wrong");
+ f.textContent=ok?"✓ Correct!":"Not yet. Try again.";
 }
+render();
 </script>
 </body>
 </html>
