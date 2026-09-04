@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exponential Functions • Graph Challenge</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071222;color:#f2f6fc;font-family:Arial,sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:22px 15px}.tag{color:#23dce1;font-size:12px;font-weight:800;letter-spacing:2px}
+h1{margin:7px 0;font-size:31px}.sub{color:#a4b5c9;margin-bottom:17px}.card{background:#0c1e32;border:1px solid #29445f;border-radius:20px;padding:21px}
+.eq{font-size:36px;font-weight:800;margin:0 0 8px}.instructions{color:#c4d0df;margin-bottom:15px}
+.layout{display:grid;grid-template-columns:1fr 1.3fr;gap:17px}.panel{background:#09192a;border:1px solid #29445f;border-radius:16px;padding:15px}
+h2{font-size:16px;margin:0 0 10px}.mode{display:flex;gap:7px;margin-bottom:10px}.mode button{margin:0;padding:8px 11px;width:auto;background:#18334b;color:#fff}.mode button.active{background:#23dce1;color:#06111e}
+table{width:100%;border-collapse:collapse}th,td{padding:7px;border-bottom:1px solid #29445f;text-align:center}th{color:#23dce1}
+input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #3a5670;background:#071222;color:#fff;font-size:16px}
+button{width:100%;padding:12px;border:0;border-radius:9px;background:#23dce1;color:#06111e;font-size:15px;font-weight:800;cursor:pointer;margin-top:9px}
+button.secondary{background:#18334b;color:#fff}.result{display:none;margin-top:12px;padding:13px;border-radius:11px;background:#102b43;border:1px solid #23dce1}
+#graph{width:100%;height:auto;background:#08192a;border-radius:11px;display:block}.hint{color:#9fb1c5;font-size:12px;margin-top:7px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.eq{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="tag">EXPONENTIAL FUNCTIONS • INTERACTIVE CHALLENGE</div>
+<h1 id="title">CHALLENGE 01</h1>
+<div class="sub">Complete the table • Plot the points • Check your answers</div>
+<div class="card">
+<div class="eq" id="eq"></div>
+<div class="instructions">Use at least five points. <b>You can enter answers as decimals OR fractions.</b></div>
+<div class="layout">
+<div class="panel">
+<h2>1. Complete the table</h2>
+<div class="mode">
+<button id="decBtn" class="active" onclick="setMode('decimal')">DECIMAL</button>
+<button id="fracBtn" onclick="setMode('fraction')">FRACTION</button>
+</div>
+<table><tr><th>x</th><th>y</th></tr>
+<tr><td>-2</td><td><input id="y0" placeholder="0.04 or 1/25"></td></tr>
+<tr><td>-1</td><td><input id="y1" placeholder="0.2 or 1/5"></td></tr>
+<tr><td>0</td><td><input id="y2" placeholder="1"></td></tr>
+<tr><td>1</td><td><input id="y3" placeholder="5"></td></tr>
+<tr><td>2</td><td><input id="y4" placeholder="25"></td></tr>
+</table>
+<button onclick="plotStudent()">PLOT MY POINTS</button>
+<div class="row" style="margin-top:9px"><label>Function behavior<select id="trend"><option value="">Choose...</option><option>Increasing</option><option>Decreasing</option></select></label></div>
+<label>y-intercept<input id="intercept" placeholder="1 or 1/1"></label>
+<button class="secondary" onclick="check()">CHECK MY ANSWERS</button>
+<div id="result" class="result"></div>
+<div class="hint">Examples: <b>0.04</b>, <b>0.2</b>, <b>1/25</b>, <b>1/5</b></div>
+</div>
+<div class="panel">
+<h2>2. Graph</h2>
+<canvas id="graph" width="650" height="470"></canvas>
+<div class="hint">The graph shows your entered points. Fractions and decimals are both accepted.</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+const c=new URLSearchParams(location.search).get("challenge")||"1";
+const data=c==="2"
+?{eq:"g(x) = (1/5)ˣ",vals:[25,5,1,.2,.04],display:["25","5","1","1/5","1/25"],trend:"Decreasing",color:"#f54b99"}
+:{eq:"f(x) = 5ˣ",vals:[.04,.2,1,5,25],display:["1/25","1/5","1","5","25"],trend:"Increasing",color:"#23dce1"};
+document.getElementById("title").textContent="CHALLENGE "+String(c).padStart(2,"0");
+document.getElementById("eq").textContent=data.eq;
+let mode="decimal";
+function setMode(m){
+ mode=m;document.getElementById("decBtn").classList.toggle("active",m==="decimal");
+ document.getElementById("fracBtn").classList.toggle("active",m==="fraction");
+ const d=mode==="decimal"?data.vals.map(v=>String(v)):data.display;
+ for(let i=0;i<5;i++)document.getElementById("y"+i).placeholder=d[i];
+}
+function parseVal(s){
+ s=(s||"").trim().replace("−","-");
+ if(s.includes("/")){let p=s.split("/");if(p.length===2&&Number(p[1])!==0)return Number(p[0])/Number(p[1]);}
+ return Number(s);
+}
+const canvas=document.getElementById("graph"),ctx=canvas.getContext("2d");
+function draw(points=[]){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+const W=canvas.width,H=canvas.height,L=58,R=18,T=22,B=42,xmin=-5,xmax=5,ymin=-2,ymax=30;
+const X=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R),Y=y=>H-B-(y-ymin)/(ymax-ymin)*(H-T-B);
+ctx.strokeStyle="#29445f";ctx.lineWidth=1;
+for(let x=-5;x<=5;x++){ctx.beginPath();ctx.moveTo(X(x),T);ctx.lineTo(X(x),H-B);ctx.stroke()}
+for(let y=-2;y<=30;y+=2){ctx.beginPath();ctx.moveTo(L,Y(y));ctx.lineTo(W-R,Y(y));ctx.stroke()}
+ctx.strokeStyle="#dce7f3";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(0),T);ctx.lineTo(X(0),H-B);ctx.stroke();
+ctx.beginPath();ctx.moveTo(L,Y(0));ctx.lineTo(W-R,Y(0));ctx.stroke();
+ctx.fillStyle="#a4b5c9";ctx.font="12px Arial";
+for(let x=-5;x<=5;x++)ctx.fillText(x,X(x)-4,H-B+21);
+for(let y=0;y<=30;y+=5)ctx.fillText(y,L-28,Y(y)+4);
+ctx.fillStyle=data.color;ctx.font="bold 13px Arial";ctx.fillText(data.eq,W-150,18);
+points.forEach(p=>{if(Number.isFinite(p[1])&&p[1]>=ymin&&p[1]<=ymax){ctx.fillStyle=data.color;ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),6,0,Math.PI*2);ctx.fill();}});
+}
+draw();
+function getVals(){return [0,1,2,3,4].map(i=>parseVal(document.getElementById("y"+i).value))}
+function plotStudent(){draw(getVals().map((y,i)=>[i-2,y]));}
+function check(){
+const got=getVals();
+const tableOK=got.every((v,i)=>Number.isFinite(v)&&Math.abs(v-data.vals[i])<.0001);
+const trendOK=document.getElementById("trend").value===data.trend;
+const intOK=Math.abs(parseVal(document.getElementById("intercept").value)-1)<.0001;
+const r=document.getElementById("result");r.style.display="block";
+r.innerHTML=(tableOK&&trendOK&&intOK)
+?`<b>🎉 Excellent!</b><br>Everything is correct!<br><br><b>Correct values:</b> ${data.display.join(" , ")}<br><b>Behavior:</b> ${data.trend}<br><b>y-intercept:</b> 1`
+:`<b>Almost there!</b><br><br><b>Correct values:</b> ${data.display.join(" , ")}<br><b>Behavior:</b> ${data.trend}<br><b>y-intercept:</b> 1<br><br>Try again using decimals or fractions.`;
+plotStudent();
+}
+</script>
+</body>
+</html>
